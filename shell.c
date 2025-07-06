@@ -32,10 +32,7 @@ Folder *root(Folder *mark)
         return mark;
     }
 
-    Folder *temp = mark->parent;
-    root(temp);
-
-    return temp;
+    return root(mark->parent);
 }
 
 void touch(char *name)

@@ -84,7 +84,7 @@ void FCFS(char *processes[], int processes_count, char *container[])
         if (!found) printf("There's no such command!!\nUse 'help' to see available commands.\n");
 
 
-        for (int i = 0; i < words_count; i++) free(words[i]);
+        for (int x = 0; x < words_count; x++) free(words[x]);
     }
 }
 
