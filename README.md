@@ -51,8 +51,7 @@ Nexo/
 ├── helper.c        # Utility functions and data structures
 ├── helper.h        # Header file for helper functions and structures
 ├── Makefile        # Build configuration
-├── README.md       # This file
-└── insane_test.sh  # Test script for the project
+└── README.md       # This file
 ```
 
 ## How to Use
