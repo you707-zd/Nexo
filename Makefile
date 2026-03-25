@@ -21,4 +21,4 @@ $(OUT): $(OBJ)
 
 # Clean command to delete object files and executable
 clean:
-	rm -f *.o $(OUT)
+	del /f *.o $(OUT).exe

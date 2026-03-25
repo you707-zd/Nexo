@@ -27,6 +27,7 @@ Command commands[] = {
         {"scheduling", scheduling_wrapper},
         {"help", help}
     };
+
 int command_count = sizeof(commands) / sizeof(commands[0]);
 
 void FCFS(char *processes[], int processes_count, char *container[])
@@ -178,7 +179,7 @@ void scheduling(void)
     char *processes[processes_count];
     char *container[processes_count];
 
-    printf("\n⚠️  Note: 'echo' collects input before any scheduled commands are executed.\n");
+    printf("\nNote: 'echo' collects input before any scheduled commands are executed.\n");
     printf("   If the target file is created later in the queue, 'echo' may fail to write.\n");
     printf("   Note: exit is not allowed inside scheduling mode.\n\n");
 

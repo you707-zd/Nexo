@@ -11,22 +11,6 @@ int main(void)
     Folder *home = calloc(1, sizeof(Folder));
     home->name = "home";
     pwd = home;
-    Command commands[] = {
-        {"mkdir", mkdir},
-        {"cd", cd},
-        {"pwd", pwd_wrapper},
-        {"touch", touch},
-        {"ls", ls_wrapper},
-        {"clear", clear_wrapper},
-        {"rm", rm},
-        {"rmdir", rmdir_wrapper},
-        {"cat", cat},
-        {"echo", echo_wrapper},
-        {"find", find_wrapper},
-        {"finddir", finddir_wrapper},
-        {"scheduling", scheduling_wrapper},
-        {"help", help}
-    };
 
     while (1)
     {
@@ -55,7 +39,6 @@ int main(void)
             continue;
         }
 
-        int command_count = sizeof(commands) / sizeof(commands[0]);
         for (int i = 0; i < command_count; i++)
         {
             if (strcmp(words[0], commands[i].cmd) == 0)
