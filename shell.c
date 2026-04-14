@@ -6,6 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+static bool has_allowed_extension(const char *filename)
+{
+    const char *dot = strrchr(filename, '.');
+    if (dot == NULL || dot == filename)
+    {
+        return false;
+    }
+
+    return (strcmp(dot, ".txt") == 0) || (strcmp(dot, ".csv") == 0);
+}
+
 void find_file(char *file, Folder *current_folder, bool *found)
 {
     if (*found) return;
@@ -37,6 +48,12 @@ Folder *root(Folder *mark)
 
 void touch(char *name)
 {
+    if (!has_allowed_extension(name))
+    {
+        printf("Unsupported file type. Only .txt and .csv are allowed.\n");
+        return;
+    }
+
     for (int i = 0; i < pwd->file_children_count; i++)
     {
         if (strcmp(name, pwd->file_children[i]->filename) == 0)
@@ -279,6 +296,12 @@ bool rmdir_confirmation(void)
 
 void cat(char *file)
 {
+    if (!has_allowed_extension(file))
+    {
+        printf("Unsupported file type. Only .txt and .csv are allowed.\n");
+        return;
+    }
+
     bool indicator = false;
     int i = 0;
     while (i < pwd->file_children_count)
@@ -317,6 +340,12 @@ void cat(char *file)
 
 void echo(char *file, char *container)
 {
+    if (!has_allowed_extension(file))
+    {
+        printf("Unsupported file type. Only .txt and .csv are allowed.\n");
+        return;
+    }
+
     bool indicator = false;
     int i = 0;
     while (i < pwd->file_children_count)
@@ -342,7 +371,7 @@ void echo(char *file, char *container)
         content = get_string("Enter Input: ");
     }
 
-    FILE *file_output = fopen(file, "w");
+    FILE *file_output = fopen(file, "a");
     if (!file_output)
     {
         printf("Failed to open the file.\n");
