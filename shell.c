@@ -17,78 +17,11 @@ static bool has_allowed_extension(const char *filename)
     return (strcmp(dot, ".txt") == 0) || (strcmp(dot, ".csv") == 0);
 }
 
-void find_file(char *file, Folder *current_folder, bool *found)
-{
-    if (*found) return;
-
-    for (int i = 0; i < current_folder->file_children_count; i++)
-    {
-        if (strcmp(file, current_folder->file_children[i]->filename) == 0)
-        {
-            *found = true;
-            return;
-        }
-    }
-
-    for (int i = 0; i < current_folder->children_count; i++)
-    {
-        find_file(file, current_folder->children[i], found);
-    }
-}
-
 Folder *root(Folder *mark)
 {
-    if (mark->parent == NULL)
-    {
-        return mark;
-    }
+    if (mark->parent == NULL) return mark;
 
     return root(mark->parent);
-}
-
-void touch(char *name)
-{
-    if (!has_allowed_extension(name))
-    {
-        printf("Unsupported file type. Only .txt and .csv are allowed.\n");
-        return;
-    }
-
-    for (int i = 0; i < pwd->file_children_count; i++)
-    {
-        if (strcmp(name, pwd->file_children[i]->filename) == 0)
-        {
-            printf("File already exists.\n");
-            return;
-        }
-    }
-
-    Folder *temp = root(pwd);
-    bool found = false;
-    find_file(name, temp, &found);
-
-    if (found)
-    {
-        printf("Sorry, There is already a file with this exact name in your OS :(\n");
-        return;
-    }
-
-    TreeFile *file_intended = calloc(1, sizeof(TreeFile));
-    file_intended->parent = pwd;
-    file_intended->filename = strdup(name);
-    pwd->file_children[pwd->file_children_count++] = file_intended;
-
-    file_intended->name = fopen(name, "w");
-    if (file_intended->name == NULL)
-    {
-        printf("Couldn't create the file.\n");
-        free(file_intended->filename);
-        free(file_intended);
-        return;
-    }
-
-    printf("File created successfully.\n");
-    fclose(file_intended->name);
 }
 
 void mkdir(char *name)
@@ -366,10 +299,7 @@ void echo(char *file, char *container)
     }
 
     char *content = NULL;
-    if (container == NULL)
-    {
-        content = get_string("Enter Input: ");
-    }
+    if (container == NULL) content = get_string("Enter Input: ");
 
     FILE *file_output = fopen(file, "a");
     if (!file_output)
@@ -379,10 +309,7 @@ void echo(char *file, char *container)
         return;
     }
 
-    if (content == NULL)
-    {
-        fprintf(file_output, "%s\n", container);
-    }
+    if (content == NULL) fprintf(file_output, "%s\n", container);
     else
     {
         fprintf(file_output, "%s\n", content);
@@ -393,7 +320,7 @@ void echo(char *file, char *container)
     printf("Written to file successfully.\n");
 }
 
-void find(char *file, Folder *current_folder, bool *found)
+void find(char *file, Folder *current_folder, bool *found, bool caller_function)
 {
     if (*found) return;
 
@@ -401,8 +328,12 @@ void find(char *file, Folder *current_folder, bool *found)
     {
         if (strcmp(file, current_folder->file_children[i]->filename) == 0)
         {
-            cwd(current_folder);
-            printf("\n");
+            if (caller_function)
+            {
+                cwd(current_folder);
+                printf("\n");
+            }
+
             *found = true;
             return;
         }
@@ -410,7 +341,7 @@ void find(char *file, Folder *current_folder, bool *found)
 
     for (int i = 0; i < current_folder->children_count; i++)
     {
-        find(file, current_folder->children[i], found);
+        find(file, current_folder->children[i], found, caller_function);
     }
 }
 
@@ -430,6 +361,51 @@ void finddir(char *name, Folder *current_folder, bool *found)
 
         finddir(name, current_folder->children[i], found);
     }
+}
+
+void touch(char *name)
+{
+    if (!has_allowed_extension(name))
+    {
+        printf("Unsupported file type. Only .txt and .csv are allowed.\n");
+        return;
+    }
+
+    for (int i = 0; i < pwd->file_children_count; i++)
+    {
+        if (strcmp(name, pwd->file_children[i]->filename) == 0)
+        {
+            printf("File already exists.\n");
+            return;
+        }
+    }
+
+    Folder *temp = root(pwd);
+    bool found = false;
+    find(name, temp, &found, false);
+
+    if (found)
+    {
+        printf("Sorry, There is already a file with this exact name in your OS :(\n");
+        return;
+    }
+
+    TreeFile *file_intended = calloc(1, sizeof(TreeFile));
+    file_intended->parent = pwd;
+    file_intended->filename = strdup(name);
+    pwd->file_children[pwd->file_children_count++] = file_intended;
+
+    file_intended->name = fopen(name, "w");
+    if (file_intended->name == NULL)
+    {
+        printf("Couldn't create the file.\n");
+        free(file_intended->filename);
+        free(file_intended);
+        return;
+    }
+
+    printf("File created successfully.\n");
+    fclose(file_intended->name);
 }
 
 void pwd_wrapper(char *arg)
@@ -463,7 +439,7 @@ void echo_wrapper(char *arg)
 void find_wrapper(char *arg)
 {
     bool found = false;
-    find(arg, pwd, &found);
+    find(arg, pwd, &found, true);
 
     if (!found)
     {
@@ -488,7 +464,7 @@ void help(char *arg)
 
     printf("nexo Command Guide:\n");
     printf("  mkdir <folder_name>       - Create a new folder\n");
-    printf("  cd <folder_name or ..>       - Change current directory\n");
+    printf("  cd <folder_name or ..>    - Change current directory\n");
     printf("  pwd                       - Print current directory path\n");
     printf("  touch <file_name>         - Create a new empty file\n");
     printf("  ls                        - List contents of the current folder\n");
